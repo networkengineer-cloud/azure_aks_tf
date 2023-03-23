@@ -1,3 +1,4 @@
+#Base variables
 variable "location" {
   type        = string
   default     = "centralus"
@@ -8,6 +9,33 @@ variable "cluster_name" {
   type        = string
   description = "The name to use for the cluster."
 }
+
+#Vnet variables
+
+variable "build_vnet" {
+  type        = bool
+  default     = false
+  description = "Build a custom virtual network for the cluster."
+}
+
+variable "address_space" {
+  type        = list(string)
+  default     = ["10.0.0.0/16"]
+  description = "The address space to be used for the Vnet."
+}
+
+variable "service_endpoints" {
+  type        = list(string)
+  default     = []
+  description = "A list of service endpoints to be enabled on the subnet."
+
+  validation {
+    condition     = anytrue([for s in var.service_endpoints : contains(["Microsoft.AzureActiveDirectory", "Microsoft.AzureCosmosDB", "Microsoft.ContainerRegistry", "Microsoft.EventHub", "Microsoft.KeyVault", "Microsoft.ServiceBus", "Microsoft.Sql", "Microsoft.Storage", "Microsoft.Web"], s)])
+    error_message = "The Service Endpoint values need to be valid."
+  }
+}
+
+#AKS variables
 
 variable "dns_prefix" {
   type        = string
